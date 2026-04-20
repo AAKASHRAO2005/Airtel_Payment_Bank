@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-4 g-4">
+    <div class="col-md-6 col-lg-5">
+        <h4 class="fw-bold mb-4"><i class="fa-solid fa-hand-holding-dollar text-warning me-2"></i> Instant Loan</h4>
+
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-3">Apply for a Loan</h5>
+            <p class="text-muted small">Max eligibility: <strong>₹50,000</strong>. Flat interest rate of <strong>5%</strong> applies upon request. Instantly credited to your balance.</p>
+            
+            <form action="/loan" method="POST" class="mt-4">
+                <input type="hidden" name="action" value="apply">
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Loan Amount Requested (₹)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-secondary">₹</span>
+                        <input type="number" name="amount" class="form-control bg-dark border-secondary text-white" min="1000" max="50000" step="100" required placeholder="0.00">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-warning w-100 py-2 rounded-pill fw-bold text-dark" onclick="return confirm('You are applying for a loan with a 5% flat fee. Do you wish to continue?')">
+                    Get Instant Loan
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-7">
+        <h4 class="fw-bold mb-4"><i class="fa-solid fa-receipt text-success me-2"></i> Active Liabilities</h4>
+        
+        <div class="glass-card p-4 h-100">
+            {% if loans %}
+            <div class="table-responsive">
+                <table class="table table-hover table-borderless align-middle">
+                    <thead class="text-muted small border-bottom border-secondary border-opacity-25">
+                        <tr>
+                            <th>Loan Ref</th>
+                            <th>Amount Borrowed</th>
+                            <th>Amount Due (Incl. Interest)</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for l in loans %}
+                        <tr>
+                            <td class="text-secondary small font-monospace">LN-{{ l.id }}</td>
+                            <td class="text-muted">₹{{ "%.2f"|format(l.amount_granted) }}</td>
+                            <td class="fw-bold {% if l.status == 'active' %}text-danger{% else %}text-success{% endif %}">
+                                ₹{{ "%.2f"|format(l.amount_due) }}
+                                {% if l.status == 'repaid' %}<br><span class="badge bg-success bg-opacity-25 text-success">REPAID</span>{% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if l.status == 'active' %}
+                                <form action="/loan" method="POST" class="d-inline">
+                                    <input type="hidden" name="action" value="repay">
+                                    <input type="hidden" name="loan_id" value="{{ l.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="return confirm('Repay ₹{{ "%.2f"|format(l.amount_due) }} from your current balance?');">Repay</button>
+                                </form>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-shield-halved fa-2x mb-3 opacity-50"></i>
+                <p>You have no active loans. Fantastic financial health!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

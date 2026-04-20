@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .action-card { transition: all 0.2s ease; border: 1px solid transparent; }
+    .action-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: rgba(239, 68, 68, 0.3); }
+</style>
+<div class="row g-4 mt-2">
+    <!-- Balance Card -->
+    <div class="col-md-8">
+        <div class="glass-card p-5 text-center position-relative overflow-hidden h-100 d-flex flex-column justify-content-center">
+            <!-- Decorative circle -->
+            <div style="position:absolute; width:150px; height:150px; background:var(--primary-color); opacity:0.1; border-radius:50%; top:-20px; left:-20px;"></div>
+            <div style="position:absolute; width:200px; height:200px; background:#fcd34d; opacity:0.05; border-radius:50%; bottom:-50px; right:-50px;"></div>
+            
+            <h5 class="text-muted fw-bold mb-3">CURRENT BALANCE</h5>
+            <div class="d-flex justify-content-center align-items-baseline gap-2">
+                <span style="font-size: 2rem; color: var(--primary-color);">₹</span>
+                <span id="animated-balance" class="balance-display">{{ "%.2f"|format(balance) }}</span>
+            </div>
+            <div class="mt-4">
+                <a href="/transfer-page" class="btn btn-fintech rounded-pill px-4 me-2"><i class="fa-solid fa-paper-plane"></i> Send Money</a>
+                <a href="/deposit-page" class="btn btn-outline-secondary rounded-pill px-4"><i class="fa-solid fa-plus"></i> Add Money</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100 d-flex flex-column justify-content-center gap-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <div class="text-muted small fw-bold">TOTAL RECEIVED</div>
+                    <div class="fs-4 fw-bold text-success">₹{{ "%.2f"|format(total_deposit) }}</div>
+                </div>
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success">
+                    <i class="fa-solid fa-arrow-turn-down"></i>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-bold">TOTAL SENT</div>
+                    <div class="fs-4 fw-bold text-danger">₹{{ "%.2f"|format(total_sent) }}</div>
+                </div>
+                <div class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger">
+                    <i class="fa-solid fa-arrow-turn-up"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="col-12 mt-4">
+        <h6 class="fw-bold text-muted mb-3">QUICK ACTIONS</h6>
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <a href="/transfer-page" class="text-decoration-none">
+                    <div class="glass-card p-4 text-center h-100 action-card">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3 text-primary">
+                            <i class="fa-solid fa-address-book fa-xl"></i>
+                        </div>
+                        <h6 class="fw-bold" style="color: var(--text-main);">To Contact</h6>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="/bank-transfer-page" class="text-decoration-none">
+                    <div class="glass-card p-4 text-center h-100 action-card">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3 text-info">
+                            <i class="fa-solid fa-building-columns fa-xl"></i>
+                        </div>
+                        <h6 class="fw-bold" style="color: var(--text-main);">To Bank</h6>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="/loan-page" class="text-decoration-none">
+                    <div class="glass-card p-4 text-center h-100 action-card">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3 text-warning">
+                            <i class="fa-solid fa-hand-holding-dollar fa-xl"></i>
+                        </div>
+                        <h6 class="fw-bold" style="color: var(--text-main);">Get Loan</h6>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a href="/profile" class="text-decoration-none">
+                    <div class="glass-card p-4 text-center h-100 action-card">
+                        <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3 text-secondary">
+                            <i class="fa-solid fa-gear fa-xl"></i>
+                        </div>
+                        <h6 class="fw-bold" style="color: var(--text-main);">Settings</h6>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="col-12 mt-5">
+        <h5 class="fw-bold mb-4">Recent Transactions</h5>
+        <div class="glass-card p-4">
+            {% if transactions %}
+            <div class="table-responsive">
+                <table class="table table-hover table-borderless align-middle">
+                    <thead class="text-muted small">
+                        <tr>
+                            <th>Recipient / Sender</th>
+                            <th>Date & Time</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if t.sender_id == session.user_id %}
+                                    <!-- Money Sent -->
+                                    <div class="bg-danger bg-opacity-10 p-2 rounded text-danger">
+                                        <i class="fa-solid fa-arrow-up"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ t.receiver_name }}</div>
+                                        <div class="small text-muted">Money Sent</div>
+                                    </div>
+                                    {% else %}
+                                    <!-- Money Received -->
+                                    <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ t.sender_name }}</div>
+                                        <div class="small text-muted">Money Received</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-muted small">{{ t.timestamp.strftime('%d %b %Y, %I:%M %p') }}</td>
+                            <td class="text-end fw-bold {% if t.sender_id == session.user_id %}text-danger{% else %}text-success{% endif %}">
+                                {% if t.sender_id == session.user_id %}-{% else %}+{% endif %}₹{{ "%.2f"|format(t.amount) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-3">
+                <a href="/history" class="btn btn-outline-primary btn-sm rounded-pill px-3">View All Transactions</a>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-receipt fa-3x mb-3 text-secondary opacity-50"></i>
+                <p>No transactions yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

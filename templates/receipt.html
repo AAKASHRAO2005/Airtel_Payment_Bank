@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;" id="success-anim">
+    <div class="glass-card p-5 text-center" style="width: 100%; max-width: 500px;">
+        
+        <div class="bg-success text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-4" style="width: 80px; height: 80px; font-size: 2.5rem;">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h3 class="fw-bold text-success mb-2">Deposit Successful</h3>
+        <p class="text-muted small mb-4">Your wallet has been credited.</p>
+
+        <div class="bg-light bg-opacity-50 p-4 rounded text-start mb-4 border border-secondary border-opacity-25">
+            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                <span class="text-muted">Transaction ID:</span>
+                <span class="fw-bold font-monospace">{{ transaction_id }}</span>
+            </div>
+            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                <span class="text-muted">Date & Time:</span>
+                <span class="fw-bold small">{{ payment_time }}</span>
+            </div>
+            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                <span class="text-muted">Paid to UI:</span>
+                <span class="fw-bold">{{ upi_id }}</span>
+            </div>
+            <div class="d-flex justify-content-between mt-3 pt-2">
+                <span class="text-muted fw-bold">Amount Paid:</span>
+                <span class="fw-bold text-danger fs-5">₹{{ "%.2f"|format(amount) }}</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="/dashboard" class="btn btn-fintech px-4 py-2 rounded-pill w-100">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-2">
+    <h3 class="fw-bold mb-4 text-danger"><i class="fa-solid fa-shield-halved"></i> Administrator Console</h3>
+
+    <!-- Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100">
+                <div>
+                    <div class="text-muted small fw-bold">TOTAL USERS</div>
+                    <div class="fs-2 fw-bold text-primary">{{ total_users }}</div>
+                </div>
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary fs-3">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100">
+                <div>
+                    <div class="text-muted small fw-bold">TOTAL SYSTEM TXNS</div>
+                    <div class="fs-2 fw-bold text-success">{{ total_transactions }}</div>
+                </div>
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success fs-3">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100">
+                <div>
+                    <div class="text-muted small fw-bold">BANK LIQUIDITY (₹)</div>
+                    <div class="fs-2 fw-bold text-warning">{{ "%.2f"|format(total_balance|float) }}</div>
+                </div>
+                <div class="bg-warning bg-opacity-10 p-3 rounded-circle text-warning fs-3">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row (Mock static for now, real-time ready) -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-4">System Accounts</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-borderless align-middle">
+                        <thead class="text-muted small border-bottom border-secondary border-opacity-25">
+                            <tr>
+                                <th>UID</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Role</th>
+                                <th class="text-end">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr>
+                                <td class="text-secondary">#{{ u.id }}</td>
+                                <td class="fw-bold">{{ u.full_name }}</td>
+                                <td class="text-muted">{{ u.mobile }}</td>
+                                <td>
+                                    <span class="badge {% if u.role == 'admin' %}bg-danger{% else %}bg-secondary{% endif %} bg-opacity-75">
+                                        {{ u.role | upper }}
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold text-primary">₹{{ "%.2f"|format(u.balance|float) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Deposits -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="glass-card p-4 border border-warning border-opacity-50">
+                <h5 class="fw-bold text-warning mb-4"><i class="fa-solid fa-clock-rotate-left"></i> Pending Deposits</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-borderless align-middle">
+                        <thead class="text-muted small border-bottom border-secondary border-opacity-25">
+                            <tr>
+                                <th>Deposit ID</th>
+                                <th>Date/Time</th>
+                                <th>User</th>
+                                <th>UTR</th>
+                                <th>Amount</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if pending_deposits %}
+                                {% for d in pending_deposits %}
+                                <tr>
+                                    <td class="text-secondary small">#{{ d.id }}</td>
+                                    <td class="text-muted small">{{ d.timestamp.strftime('%d %b %Y, %H:%M') if d.timestamp else 'N/A' }}</td>
+                                    <td>{{ d.full_name }} <br><span class="text-muted small">{{ d.mobile }}</span></td>
+                                    <td class="font-monospace">{{ d.utr }}</td>
+                                    <td class="fw-bold text-success">₹{{ "%.2f"|format(d.amount) }}</td>
+                                    <td class="text-end">
+                                        <a href="/approve-deposit/{{ d.id }}" class="btn btn-sm btn-success px-3 me-2 rounded-pill"><i class="fa-solid fa-check"></i> Approve</a>
+                                        <a href="/reject-deposit/{{ d.id }}" class="btn btn-sm btn-outline-danger px-3 rounded-pill"><i class="fa-solid fa-xmark"></i> Reject</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No pending deposits.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-chart-line"></i> Transaction Analytics</h5>
+                <canvas id="adminChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Transaction Audit Trail -->
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <div class="glass-card p-4 border border-danger border-opacity-25">
+                <h5 class="fw-bold text-danger mb-4"><i class="fa-solid fa-eye"></i> Audit Trail (All Transactions)</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-borderless align-middle table-sm">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>TXN ID</th>
+                                <th>Date/Time</th>
+                                <th>Sender</th>
+                                <th>Receiver</th>
+                                <th>Amount</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in transactions %}
+                            <tr>
+                                <td class="font-monospace text-secondary small">TXN{{ t.id }}</td>
+                                <td class="text-muted small">{{ t.timestamp.strftime('%d %b %Y, %H:%M') }}</td>
+                                <td>{{ t.sender_name }}</td>
+                                <td>{{ t.receiver_name }}</td>
+                                <td class="fw-bold">₹{{ "%.2f"|format(t.amount) }}</td>
+                                <td class="text-end">
+                                    <a href="/delete-transaction/{{ t.id }}" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('WARNING: Are you sure you want to delete this systemic transaction record?');">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Fake data for visual wow factor
+        const ctx = document.getElementById('adminChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'System Transaction Volume (₹)',
+                    data: [12000, 19000, 15000, 22000, 18000, 25000, 30000],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

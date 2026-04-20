@@ -1,0 +1,186 @@
+:root {
+    --primary-color: #ef4444; /* Airtel Red */
+    --primary-dark: #dc2626;
+    --bg-color: #f3f4f6;
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --sidebar-bg: #ffffff;
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --success-color: #10b981;
+    --font-family: 'Inter', sans-serif;
+    --transition-speed: 0.3s;
+}
+
+[data-theme="dark"] {
+    --primary-color: #f87171;
+    --primary-dark: #ef4444;
+    --bg-color: #111827;
+    --card-bg: rgba(31, 41, 55, 0.7);
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+    --sidebar-bg: #1f2937;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+}
+
+/* Glassmorphism */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    height: 100vh;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--sidebar-bg);
+    padding-top: 20px;
+    border-right: 1px solid var(--glass-border);
+    z-index: 1000;
+    transition: left var(--transition-speed);
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    transition: margin-left var(--transition-speed);
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    display: block;
+    transition: background var(--transition-speed), padding-left var(--transition-speed);
+    border-left: 4px solid transparent;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+    padding-left: 30px;
+}
+
+.brand-logo {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+}
+
+/* Topbar */
+.topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 20px;
+    background: transparent;
+}
+
+/* Dynamic Counter */
+.balance-display {
+    font-size: 3rem;
+    font-weight: 700;
+    background: -webkit-linear-gradient(45deg, var(--primary-color), #fcd34d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Gradient Buttons */
+.btn-fintech {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-fintech:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39);
+    color: white;
+}
+
+/* Loading Spinner Overlay */
+#loader {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+#loader.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+[data-theme="dark"] #loader {
+    background: rgba(17, 24, 39, 0.8);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(239, 68, 68, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Success Animation Checkmark */
+.success-check {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: var(--success-color);
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px var(--success-color);
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .sidebar { left: -250px; }
+    .sidebar.open { left: 0; }
+    .main-content { margin-left: 0; }
+}

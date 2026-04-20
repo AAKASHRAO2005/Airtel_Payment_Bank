@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="glass-card p-5" style="width: 100%; max-width: 450px;">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-primary">Open an Account</h3>
+            <p class="text-muted small">Join Airteal paymen seconds</p>
+        </div>
+
+        <form action="/register" method="POST" class="needs-validation" novalidate>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control bg-transparent" id="full_name" name="full_name" placeholder="Full Name" required>
+                <label for="full_name">Full Name</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="tel" class="form-control bg-transparent" id="mobile" name="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" title="Must be 10 digits" required>
+                <label for="mobile">10-Digit Mobile Number</label>
+            </div>
+            
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control bg-transparent" id="password" name="password" placeholder="Secure Password" required minlength="6">
+                <label for="password">Secure Password</label>
+            </div>
+
+            <button type="submit" class="btn btn-fintech w-100 py-2 mb-3">Get Started <i class="fa-solid fa-arrow-right ms-2"></i></button>
+            
+            <div class="text-center text-muted small">
+                Already have an account? <a href="/login" class="fw-bold text-primary text-decoration-none">Sign In</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

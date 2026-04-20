@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 70vh;" id="success-anim">
+    
+    <svg class="success-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="success-check-circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="success-check-path" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+
+    <h2 class="fw-bold mt-4 mb-2">Payment Successful!</h2>
+    <h1 class="display-4 fw-bold text-success mb-2">₹{{ "%.2f"|format(amount) }}</h1>
+    <p class="text-muted mb-5">Sent securely to <strong>{{ receiver_name }}</strong></p>
+
+    <div class="d-flex gap-3">
+        <a href="/dashboard" class="btn btn-fintech px-4 py-2 rounded-pill">Go to Dashboard</a>
+        <a href="/transfer-page" class="btn btn-outline-secondary px-4 py-2 rounded-pill">Send More</a>
+    </div>
+</div>
+
+<style>
+    .success-check-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: var(--success-color);
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .success-check-path {
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        transform-origin: 50% 50%;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% { stroke-dashoffset: 0; }
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var duration = 3 * 1000;
+        var end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#ef4444', '#10b981', '#fcd34d']
+            });
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#ef4444', '#10b981', '#fcd34d']
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    });
+</script>
+{% endblock %}
