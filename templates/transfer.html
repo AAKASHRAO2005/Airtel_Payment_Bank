@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <h4 class="fw-bold mb-4">Transfer Money</h4>
+        
+        <div class="glass-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pe-2">
+                <span class="text-muted small fw-bold">AVAILABLE BALANCE</span>
+                <span class="fw-bold fs-5 text-primary">₹{{ "%.2f"|format(balance) }}</span>
+            </div>
+
+            <form action="/transfer" method="POST" class="needs-validation" onsubmit="return confirm('Are you sure you want to send this amount?');" novalidate>
+                <div class="form-floating mb-3">
+                    <input type="tel" class="form-control bg-transparent fw-bold" id="receiver_mobile" name="receiver_mobile" placeholder="Recipient's Mobile" pattern="[0-9]{10}" required>
+                    <label for="receiver_mobile">Recipient's 10-Digit Mobile</label>
+                </div>
+                
+                <div class="form-floating mb-4">
+                    <input type="number" class="form-control bg-transparent fw-bold fs-3 text-danger" id="amount" name="amount" placeholder="Amount (₹)" min="1" max="{{ balance }}" required>
+                    <label for="amount">Amount (₹)</label>
+                </div>
+
+                <button type="submit" class="btn btn-fintech w-100 py-3 rounded-pill">
+                    Send Securely <i class="fa-solid fa-paper-plane ms-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

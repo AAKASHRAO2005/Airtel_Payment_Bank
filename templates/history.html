@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row w-100 justify-content-center mt-2">
+    <div class="col-12 col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold m-0"><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h4>
+            <a href="/download-statement" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+        </div>
+        
+        <div class="glass-card p-4">
+            {% if transactions %}
+            <div class="table-responsive">
+                <table class="table table-hover table-borderless align-middle" id="live-transactions-table">
+                    <thead class="text-muted small">
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Recipient / Sender</th>
+                            <th>Date & Time</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-body">
+                        {% for t in transactions %}
+                        <tr class="transaction-row">
+                            <td class="text-secondary small font-monospace">TXN{{ t.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    {% if t.sender_id == session.user_id %}
+                                    <div class="bg-danger bg-opacity-10 p-2 rounded text-danger">
+                                        <i class="fa-solid fa-arrow-up"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ t.receiver_name }}</div>
+                                        <div class="small text-muted">Sent</div>
+                                    </div>
+                                    {% else %}
+                                    <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ t.sender_name }}</div>
+                                        <div class="small text-muted">Received</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="text-muted small timestamp-col">{{ t.timestamp.strftime('%d %b %Y, %I:%M %p') }}</td>
+                            <td class="text-end fw-bold {% if t.sender_id == session.user_id %}text-danger{% else %}text-success{% endif %}">
+                                {% if t.sender_id == session.user_id %}-{% else %}+{% endif %}₹<span class="amt">{{ "%.2f"|format(t.amount) }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-box-open fa-3x mb-3 text-secondary opacity-50"></i>
+                <p>You have no transaction history yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live update for History if needed, leveraging the /api/live-transactions endpoint
+    // We already fetch balance in app.js, this script can poll for new transactions
+    setInterval(() => {
+        fetch('/api/live-transactions')
+            .then(res => res.json())
+            .then(data => {
+                if(data.transactions) {
+                    const tbody = document.getElementById('transaction-body');
+                    if(tbody && data.transactions.length > 0) {
+                        // Compare latest txn id to first row
+                        const firstRow = tbody.querySelector('tr');
+                        const latestId = data.transactions[0].id;
+                        const currentIdAttr = firstRow ? firstRow.querySelector('td.font-monospace').innerText.replace('TXN', '') : 0;
+                        
+                        if(latestId != currentIdAttr) {
+                            // Needs a proper frontend reactive framework like React or Vue for seamless DOM array reconciliation, 
+                            // but for vanilla JS we can just reload the page for now to get fresh history properly formatted, 
+                            // OR we could build DOM nodes. But for simplicity and reliability here:
+                            // We trigger a slight visual cue on the table.
+                            tbody.style.opacity = '0.5';
+                            location.reload(); 
+                        }
+                    }
+                }
+            })
+            .catch(err => console.error(err));
+    }, 15000);
+</script>
+{% endblock %}

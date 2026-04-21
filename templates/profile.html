@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <h4 class="fw-bold mb-4">Profile Settings</h4>
+        
+        <div class="glass-card mb-4 p-4 text-center">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width:80px; height:80px; font-size: 2rem;">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <h3 class="fw-bold">{{ user.full_name }}</h3>
+            <p class="text-muted font-monospace"><i class="fa-solid fa-phone"></i> +91 {{ user.mobile }}</p>
+            <span class="badge bg-secondary px-3 py-2 text-uppercase">{{ user.role }}</span>
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-pen-to-square"></i> Update Personal Info</h6>
+            <form action="/profile" method="POST">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control bg-transparent" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                    <label for="full_name">Full Name</label>
+                </div>
+                <button type="submit" name="update_profile" class="btn btn-fintech w-100 py-2">Save Changes</button>
+            </form>
+        </div>
+
+        <div class="glass-card p-4">
+            <h6 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-lock"></i> Change Security PIN/Password</h6>
+            <form action="/profile" method="POST">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control bg-transparent" name="current_password" placeholder="Current Password" required>
+                    <label>Current Password</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control bg-transparent" name="new_password" placeholder="New Password" required minlength="6">
+                    <label>New Password</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input type="password" class="form-control bg-transparent" name="confirm_password" placeholder="Confirm New Password" required minlength="6">
+                    <label>Confirm New Password</label>
+                </div>
+                <button type="submit" name="change_password" class="btn btn-outline-danger w-100 py-2">Update Credentials</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
