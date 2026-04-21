@@ -1,8 +1,50 @@
-.venv/
+
+---
+
+# 🚫 .gitignore
+
+```gitignore
+# Python
 __pycache__/
-node_modules/
-.env
 *.pyc
-database/
-.vercel/
-.vercel
+*.pyo
+*.pyd
+*.db
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Node (if used)
+node_modules/
+npm-debug.log*
+
+# Build files
+dist/
+build/
+
+# Docker
+*.pid
+*.seed
+
+# MySQL / SQLite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.swp
